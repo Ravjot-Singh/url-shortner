@@ -1,7 +1,8 @@
-import { nanoid } from "nanoid";
+
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { Url } from "../models/URL.models.js";
+import crypto from "crypto";
 
 const isValidURL = (url) => {
   try {
@@ -12,17 +13,23 @@ const isValidURL = (url) => {
   }
 };
 
-async function generateUniqueShortCode(length = 6) {
-  let shortCode;
-  let exists = true;
 
-  while (exists) {
-    shortCode = nanoid(length);
-    exists = await Url.findOne({ shortURL: shortCode });
+async function generateRandomCode(length = 6) {
+  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_'; // URL-safe
+  const alphabetLength = alphabet.length;
+  let result = '';
+
+  
+  const randomBytes = crypto.randomBytes(length);
+
+  for (let i = 0; i < length; i++) {
+    const index = randomBytes[i] % alphabetLength;
+    result += alphabet[index];
   }
 
-  return shortCode;
+  return result;
 }
+
 
 const createShortenURL = async (req, res, next) => {
   try {
@@ -36,7 +43,6 @@ const createShortenURL = async (req, res, next) => {
       throw new ApiError(400, "Invalid URL provided.");
     }
 
-    // Check if URL is already shortened
     const existing = await Url.findOne({ originalURL });
     if (existing) {
       return res
@@ -44,8 +50,8 @@ const createShortenURL = async (req, res, next) => {
         .json(new ApiResponse(200, existing, "URL already shortened"));
     }
 
-    // Generate unique short code locally
-    const shortCode = await generateUniqueShortCode();
+  
+    const shortCode = await generateRandomCode();
 
     const newUrl = await Url.create({
       originalURL,
