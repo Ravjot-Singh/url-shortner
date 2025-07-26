@@ -1,2 +1,1 @@
 This is a project to store a URL in the database and generate and send a short url.
-The major issue faced during this was how to shorten the URL because i was using some librarues which were depriciated that resulted in some unexpected results.

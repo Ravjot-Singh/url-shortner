@@ -19,7 +19,7 @@ async function generateRandomCode(length = 6) {
   const alphabetLength = alphabet.length;
   let result = '';
 
-  
+
   const randomBytes = crypto.randomBytes(length);
 
   for (let i = 0; i < length; i++) {
@@ -50,7 +50,7 @@ const createShortenURL = async (req, res, next) => {
         .json(new ApiResponse(200, existing, "URL already shortened"));
     }
 
-  
+
     const shortCode = await generateRandomCode();
 
     const newUrl = await Url.create({
@@ -76,7 +76,11 @@ const redirectToOriginalUrl = async (req, res, next) => {
       throw new ApiError(404, "URL not found");
     }
 
-    res.redirect(searchedUrl.originalURL);
+    console.log("Redirecting to:", searchedUrl.originalURL);
+    
+
+
+    return res.redirect(searchedUrl.originalURL);
   } catch (err) {
     next(err);
   }

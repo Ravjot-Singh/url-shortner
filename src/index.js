@@ -1,13 +1,15 @@
 import 'dotenv/config'
+import cors from 'cors';
 import mongoose from "mongoose";
 import express from "express";
 import UrlRoutes from "./routes/URL.routes.js";
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 
 
-app.use("/url", UrlRoutes)
+app.use("/url", UrlRoutes);
 
 
 app.use((err, req, res, next) => {
